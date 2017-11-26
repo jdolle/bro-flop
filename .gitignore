@@ -1,0 +1,10 @@
+/node_modules
+/www
+/plugins
+/platforms
+/babel_cache
+/uglify_cache
+/coverage
+/.nyc_output
+.DS_Store
+npm-debug.log

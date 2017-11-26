@@ -1,0 +1,32 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-consistent-codestyle",
+    "tslint-microsoft-contrib"
+  ],
+  "rules": {
+    "missing-jsdoc": false,
+    "no-require-imports": false,
+    "jsdoc-format": [true, "check-multiline-start"],
+    "no-backbone-get-set-outside-model": false,
+    "no-http-string": false,
+    "no-any": false,
+    "no-debugger": false,
+    "no-console": false,
+    "no-unsafe-any": false,
+    "typedef": false,
+    "trailing-comma": [true, {
+      "multiline": "always",
+      "singleline": "never"
+    }],
+    "prefer-template": true,
+    "semicolon": [true, "never"],
+    "ordered-imports": false,
+    "import-name": false,
+    "export-name": false,
+    "interface-name": false,
+    "no-angle-bracket-type-assertion": true,
+    "prefer-type-cast": false,
+    "no-relative-imports": false
+  }
+}

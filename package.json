@@ -1,0 +1,119 @@
+{
+  "name": "com.jeffdolle.broflop",
+  "displayName": "broflop",
+  "description": "Bros flopping around until they belly flop",
+  "main": "www/index.js",
+  "scripts": {
+    "pg": "phonegap",
+    "cordova": "cordova",
+    "type-check": "tsc",
+    "lint": "tslint --project tsconfig.json  \"src/**/*.ts\"",
+    "test": "nyc mocha --reporter spec --growl --exit \"src/**/*.spec.ts\"",
+    "test:watch": "nyc mocha --reporter list --growl --watch --watch-extensions ts --exit \"src/**/*.spec.ts\"",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "start": "npm run pg serve",
+    "build:watch": "webpack --watch",
+    "build": "webpack && cordova prepare && cordova build",
+    "build:production": "cross-env NODE_ENV=production npm run build",
+    "platforms": "npm run cordova platform add ios && npm run cordova platform add browser"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdolle/bro-flop.git"
+  },
+  "keywords": [
+    "game",
+    "html5",
+    "mobile",
+    "bro"
+  ],
+  "author": "Jeff Dolle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jdolle/bro-flop/issues"
+  },
+  "homepage": "https://github.com/jdolle/bro-flop#readme",
+  "dependencies": {
+    "cordova-browser": "^5.0.1",
+    "cordova-ios": "^4.5.4",
+    "cordova-plugin-battery-status": "~1.2.4",
+    "cordova-plugin-camera": "~2.4.1",
+    "cordova-plugin-device": "~1.1.6",
+    "cordova-plugin-dialogs": "~1.3.3",
+    "cordova-plugin-file": "~4.3.3",
+    "cordova-plugin-geolocation": "~2.4.3",
+    "cordova-plugin-globalization": "~1.0.7",
+    "cordova-plugin-inappbrowser": "~1.7.1",
+    "cordova-plugin-media-capture": "~1.4.3",
+    "cordova-plugin-network-information": "~1.3.3",
+    "cordova-plugin-vibration": "~2.1.5",
+    "@types/pixi.js": "^4.6.0",
+    "lodash": "^4.17.4",
+    "matter-js": "^0.13.0",
+    "pixi.js": "^4.6.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.32",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.32",
+    "@babel/plugin-syntax-object-rest-spread": "^7.0.0-beta.32",
+    "@babel/preset-env": "^7.0.0-beta.32",
+    "@babel/preset-typescript": "^7.0.0-beta.32",
+    "@babel/register": "^7.0.0-beta.32",
+    "@types/copy-webpack-plugin": "^4.0.1",
+    "@types/lodash": "^4.14.85",
+    "@types/lodash-decorators": "^4.0.0",
+    "@types/mocha": "^2.2.44",
+    "@types/phonegap": "^2.3.28",
+    "@types/webpack": "^3.8.1",
+    "babel-loader": "^8.0.0-beta.0",
+    "clean-webpack-plugin": "^0.1.17",
+    "copy-webpack-plugin": "^4.2.3",
+    "cross-env": "^5.1.1",
+    "dotenv-webpack": "^1.5.4",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "phonegap": "^7.1.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.8.0",
+    "tslint-consistent-codestyle": "^1.10.1",
+    "tslint-microsoft-contrib": "^5.0.1",
+    "typescript": "^2.6.1",
+    "unexpected": "^10.36.2",
+    "webpack": "^3.8.1"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "./__setup__/babel-polyfill.js"
+    ],
+    "exclude": [
+      "app/www/**/*",
+      "**/*.spec.ts"
+    ],
+    "include": [
+      "app/**/*.ts"
+    ],
+    "all": true
+  },
+  "cordova": {
+    "platforms": [
+      "ios",
+      "browser"
+    ],
+    "plugins": {
+      "cordova-plugin-battery-status": {},
+      "cordova-plugin-camera": {},
+      "cordova-plugin-media-capture": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-dialogs": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-geolocation": {},
+      "cordova-plugin-globalization": {},
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-vibration": {}
+    }
+  }
+}
