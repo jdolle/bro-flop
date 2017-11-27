@@ -13,7 +13,7 @@ class App {
   }
 
   // Application Constructor
-  public initialize() {
+  public init() {
     this.bindEvents()
   }
 
@@ -37,8 +37,8 @@ class App {
   private receivedEvent(id: string) {
       console.log(`Received Event: ${id}`)
 
-      new Game().begin()
+      new Game().init()
   }
 }
 
-new App().initialize()
+new App().init()

@@ -39,25 +39,35 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
     }
 
     const leftArmOptions = {
-      label: 'left-arm',
+      label: 'leftArm',
       collisionFilter: collisionFilter(),
       // chamfer: {
       //   radius: 10 * scale,
       // },
       ...options,
+    }
+
+    const leftLowerArmOptions = {
+      ...leftArmOptions,
+      label: 'leftLowerArm',
     }
 
     const rightArmOptions = {
-      label: 'right-arm',
+      label: 'rightArm',
       collisionFilter: collisionFilter(),
       // chamfer: {
       //   radius: 10 * scale,
       // },
       ...options,
+    }
+
+    const rightLowerArmOptions = {
+      ...rightArmOptions,
+      label: 'rightLowerArm',
     }
 
     const leftLegOptions = {
-      label: 'left-leg',
+      label: 'leftLeg',
       collisionFilter: collisionFilter(),
       // chamfer: {
       //   radius: 10 * scale,
@@ -65,25 +75,35 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
       ...options,
     }
 
+    const leftLowerLegOptions = {
+      ...leftLegOptions,
+      label: 'leftLowerLeg',
+    }
+
     const rightLegOptions = {
-      label: 'right-leg',
+      label: 'rightLeg',
       collisionFilter: collisionFilter(),
       // chamfer: {
       //   radius: 10 * scale,
       // },
       ...options,
+    }
+
+    const rightLowerLegOptions = {
+      ...rightLegOptions,
+      label: 'rightLowerLeg',
     }
 
     const head = Bodies.rectangle(x, y - 60 * scale, 34 * scale, 40 * scale, headOptions)
     const chest = Bodies.rectangle(x, y, 55 * scale, 80 * scale, chestOptions)
     const rightUpperArm = Bodies.rectangle(x + 39 * scale, y - 15 * scale, 20 * scale, 40 * scale, rightArmOptions)
-    const rightLowerArm = Bodies.rectangle(x + 39 * scale, y + 25 * scale, 20 * scale, 60 * scale, rightArmOptions)
+    const rightLowerArm = Bodies.rectangle(x + 39 * scale, y + 25 * scale, 20 * scale, 60 * scale, rightLowerArmOptions)
     const leftUpperArm = Bodies.rectangle(x - 39 * scale, y - 15 * scale, 20 * scale, 40 * scale, leftArmOptions)
-    const leftLowerArm = Bodies.rectangle(x - 39 * scale, y + 25 * scale, 20 * scale, 60 * scale, leftArmOptions)
+    const leftLowerArm = Bodies.rectangle(x - 39 * scale, y + 25 * scale, 20 * scale, 60 * scale, leftLowerArmOptions)
     const leftUpperLeg = Bodies.rectangle(x - 20 * scale, y + 57 * scale, 20 * scale, 40 * scale, leftLegOptions)
-    const leftLowerLeg = Bodies.rectangle(x - 20 * scale, y + 97 * scale, 20 * scale, 60 * scale, leftLegOptions)
+    const leftLowerLeg = Bodies.rectangle(x - 20 * scale, y + 97 * scale, 20 * scale, 60 * scale, leftLowerLegOptions)
     const rightUpperLeg = Bodies.rectangle(x + 20 * scale, y + 57 * scale, 20 * scale, 40 * scale, rightLegOptions)
-    const rightLowerLeg = Bodies.rectangle(x + 20 * scale, y + 97 * scale, 20 * scale, 60 * scale, rightLegOptions)
+    const rightLowerLeg = Bodies.rectangle(x + 20 * scale, y + 97 * scale, 20 * scale, 60 * scale, rightLowerLegOptions)
 
     const chestToRightUpperArm = Constraint.create({
       bodyA: chest,
@@ -160,7 +180,7 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
     const legToLeg = Constraint.create({
       bodyA: leftLowerLeg,
       bodyB: rightLowerLeg,
-      stiffness: 0.01,
+      stiffness: 0.001,
     })
 
     return Composite.create({
