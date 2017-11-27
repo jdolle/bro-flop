@@ -2203,12 +2203,31 @@ declare module 'matter-js' {
           static clear(pairs: any): any;
       }
 
+      interface IVertex {
+        x: number;
+        y: number;
+        index: number;
+        body: Body;
+        isInternal: boolean;
+      }
+
+      interface IContact {
+        id: string;
+        normalImpulse: number;
+        tangentImpulse: number;
+        vertex: IVertex;
+      }
+
+      interface IContacts {
+        [index: string]: IContact;
+      }
+
       export interface IPair {
           id: number;
           bodyA: Body;
           bodyB: Body;
-          contacts: any;
-          activeContacts: any;
+          contacts: IContacts;
+          activeContacts: IContacts;
           separation: number;
           isActive: boolean;
           timeCreated: number;

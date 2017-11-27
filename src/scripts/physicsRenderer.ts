@@ -22,7 +22,7 @@ const bodyFillColor = (body: Body) => {
 }
 
 export const drawBodies = (stage: PIXI.Container, bodies: Body[]) => {
-  bodies.forEach((body) => {
+  for (const body of bodies) {
     const box = new PIXI.Graphics()
 
     box.lineStyle(2, 0xff00ff)
@@ -33,20 +33,20 @@ export const drawBodies = (stage: PIXI.Container, bodies: Body[]) => {
     })
     box.endFill()
     stage.addChild(box)
-  })
+  }
 }
 
 export const drawComposites = (stage: PIXI.Container, composites: Composite[], showConstraints = true) => {
-  composites.forEach((composite) => {
+  for (const composite of composites) {
     drawBodies(stage, Composite.allBodies(composite))
     if (showConstraints === true) {
       drawConstraints(stage, Composite.allConstraints(composite))
     }
-  })
+  }
 }
 
 export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]) => {
-  constraints.forEach((constraint) => {
+  for (const constraint of constraints) {
     const { position: positionA } = constraint.bodyA
     const { position: positionB } = constraint.bodyB
     const graphic = new PIXI.Graphics()
@@ -54,5 +54,5 @@ export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]
     graphic.moveTo(positionA.x + constraint.pointA.x, positionA.y + constraint.pointA.y)
     graphic.lineTo(positionB.x + constraint.pointB.x, positionB.y + constraint.pointB.y)
     stage.addChild(graphic)
-  })
+  }
 }

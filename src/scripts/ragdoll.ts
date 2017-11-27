@@ -177,11 +177,11 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
       stiffness: 0.6,
     })
 
-    const legToLeg = Constraint.create({
-      bodyA: leftLowerLeg,
-      bodyB: rightLowerLeg,
-      stiffness: 0.001,
-    })
+    // const legToLeg = Constraint.create({
+    //   bodyA: leftLowerLeg,
+    //   bodyB: rightLowerLeg,
+    //   stiffness: 0.001,
+    // })
 
     return Composite.create({
       bodies: [
@@ -193,7 +193,7 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
         upperToLowerLeftArm, upperToLowerRightArm, chestToLeftUpperArm,
         chestToRightUpperArm, headContraint, upperToLowerLeftLeg,
         upperToLowerRightLeg, chestToLeftUpperLeg, chestToRightUpperLeg,
-        legToLeg,
+        // legToLeg,
       ],
     })
 }
