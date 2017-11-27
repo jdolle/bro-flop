@@ -6,7 +6,12 @@ import {
 } from 'matter-js'
 import { forEachRight } from 'lodash'
 
+const boxesGfx = new PIXI.Graphics()
+const constraintsGfx = new PIXI.Graphics()
+
 export const drawWorld = (stage: PIXI.Container, world: World) => {
+  boxesGfx.clear()
+  constraintsGfx.clear()
   drawComposites(stage, world.composites)
   drawBodies(stage, world.bodies)
 }
@@ -22,18 +27,17 @@ const bodyFillColor = (body: Body) => {
 }
 
 export const drawBodies = (stage: PIXI.Container, bodies: Body[]) => {
-  for (const body of bodies) {
-    const box = new PIXI.Graphics()
+  boxesGfx.lineStyle(2, 0xff00ff)
 
-    box.lineStyle(2, 0xff00ff)
-    box.beginFill(bodyFillColor(body), 0.5)
-    box.moveTo(body.vertices[0].x, body.vertices[0].y)
+  for (const body of bodies) {
+    boxesGfx.beginFill(bodyFillColor(body), 0.5)
+    boxesGfx.moveTo(body.vertices[0].x, body.vertices[0].y)
     forEachRight(body.vertices, (vert) => {
-      box.lineTo(vert.x, vert.y)
+      boxesGfx.lineTo(vert.x, vert.y)
     })
-    box.endFill()
-    stage.addChild(box)
+    boxesGfx.endFill()
   }
+  stage.addChild(boxesGfx)
 }
 
 export const drawComposites = (stage: PIXI.Container, composites: Composite[], showConstraints = true) => {
@@ -46,13 +50,13 @@ export const drawComposites = (stage: PIXI.Container, composites: Composite[], s
 }
 
 export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]) => {
+  constraintsGfx.clear()
   for (const constraint of constraints) {
     const { position: positionA } = constraint.bodyA
     const { position: positionB } = constraint.bodyB
-    const graphic = new PIXI.Graphics()
-    graphic.lineStyle(1, 0xffffff, 1)
-    graphic.moveTo(positionA.x + constraint.pointA.x, positionA.y + constraint.pointA.y)
-    graphic.lineTo(positionB.x + constraint.pointB.x, positionB.y + constraint.pointB.y)
-    stage.addChild(graphic)
+    constraintsGfx.lineStyle(1, 0xffffff, 1)
+    constraintsGfx.moveTo(positionA.x + constraint.pointA.x, positionA.y + constraint.pointA.y)
+    constraintsGfx.lineTo(positionB.x + constraint.pointB.x, positionB.y + constraint.pointB.y)
   }
+  stage.addChild(constraintsGfx)
 }
