@@ -50,6 +50,7 @@ export class Game {
     const ragdolls = Composite.create()
     this.playerRagdoll = ragdoll(100, 200, 0.5, {
       friction: 0.5,
+      frictionAir: 0.1,
     })
 
     Composite.add(ragdolls, this.playerRagdoll)
@@ -105,7 +106,7 @@ export class Game {
     //   }
     // })
 
-    this.engine.world.gravity.scale *= -1 // reverse gravity
+    this.engine.world.gravity.scale *= -2 // reverse gravity
 
     World.add(this.engine.world, [ground, leftWall, rightWall, ceiling, ragdolls])
 
@@ -118,12 +119,25 @@ export class Game {
     this.draw()
   }
 
-  // tslint:disable-next-line cyclomatic-complexity
+  // tslint:disable-next-line cyclomatic-complexity max-func-body-length
   public update() {
-    Engine.update(this.engine, 1000 / 200)
-
     const { state } = this.playerController
     const ragdollBodies = Composite.allBodies(this.playerRagdoll)
+
+    const chest = ragdollBodies.find((body) => {
+      return body.label === 'chest'
+    })
+
+    if (chest !== undefined) {
+      const { gravity } = this.engine.world
+
+      Body.applyForce(
+        chest,
+        chest.position,
+        Vector.create(gravity.x * gravity.scale * -1, gravity.y * gravity.scale * -1),
+      )
+    }
+
     if (state[PlayerActions.activateLeftFoot]) {
       const leftLeg = ragdollBodies.find((body) => {
         return body.label === 'leftLowerLeg'
@@ -219,6 +233,8 @@ export class Game {
         }
       }
     }
+
+    Engine.update(this.engine, 1000 / 100)
   }
 
   public draw() {

@@ -41,9 +41,9 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
     const leftArmOptions = {
       label: 'leftArm',
       collisionFilter: collisionFilter(),
-      // chamfer: {
-      //   radius: 10 * scale,
-      // },
+      chamfer: {
+        radius: 10 * scale,
+      },
       ...options,
     }
 
@@ -55,9 +55,9 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
     const rightArmOptions = {
       label: 'rightArm',
       collisionFilter: collisionFilter(),
-      // chamfer: {
-      //   radius: 10 * scale,
-      // },
+      chamfer: {
+        radius: 10 * scale,
+      },
       ...options,
     }
 
@@ -69,9 +69,9 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
     const leftLegOptions = {
       label: 'leftLeg',
       collisionFilter: collisionFilter(),
-      // chamfer: {
-      //   radius: 10 * scale,
-      // },
+      chamfer: {
+        radius: 10 * scale,
+      },
       ...options,
     }
 
@@ -83,9 +83,9 @@ export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) =
     const rightLegOptions = {
       label: 'rightLeg',
       collisionFilter: collisionFilter(),
-      // chamfer: {
-      //   radius: 10 * scale,
-      // },
+      chamfer: {
+        radius: 10 * scale,
+      },
       ...options,
     }
 
