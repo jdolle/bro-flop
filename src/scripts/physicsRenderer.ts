@@ -9,13 +9,6 @@ import { forEachRight } from 'lodash'
 const boxesGfx = new PIXI.Graphics()
 const constraintsGfx = new PIXI.Graphics()
 
-export const drawWorld = (stage: PIXI.Container, world: World) => {
-  boxesGfx.clear()
-  constraintsGfx.clear()
-  drawComposites(stage, world.composites)
-  drawBodies(stage, world.bodies)
-}
-
 const bodyFillColor = (body: Body) => {
   if (body.isSleeping || body.isStatic) {
     return 0xaaaaaa
@@ -40,15 +33,6 @@ export const drawBodies = (stage: PIXI.Container, bodies: Body[]) => {
   stage.addChild(boxesGfx)
 }
 
-export const drawComposites = (stage: PIXI.Container, composites: Composite[], showConstraints = true) => {
-  for (const composite of composites) {
-    drawBodies(stage, Composite.allBodies(composite))
-    if (showConstraints === true) {
-      drawConstraints(stage, Composite.allConstraints(composite))
-    }
-  }
-}
-
 export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]) => {
   constraintsGfx.clear()
   for (const constraint of constraints) {
@@ -59,4 +43,20 @@ export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]
     constraintsGfx.lineTo(positionB.x + constraint.pointB.x, positionB.y + constraint.pointB.y)
   }
   stage.addChild(constraintsGfx)
+}
+
+export const drawComposites = (stage: PIXI.Container, composites: Composite[], showConstraints = true) => {
+  for (const composite of composites) {
+    drawBodies(stage, Composite.allBodies(composite))
+    if (showConstraints === true) {
+      drawConstraints(stage, Composite.allConstraints(composite))
+    }
+  }
+}
+
+export const drawWorld = (stage: PIXI.Container, world: World) => {
+  boxesGfx.clear()
+  constraintsGfx.clear()
+  drawComposites(stage, world.composites)
+  drawBodies(stage, world.bodies)
 }

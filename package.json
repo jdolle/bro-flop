@@ -75,6 +75,7 @@
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
     "phonegap": "^7.1.1",
+    "testdouble": "^3.2.6",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
     "tslint-consistent-codestyle": "^1.10.1",
@@ -91,11 +92,14 @@
       "./__setup__/babel-polyfill.js"
     ],
     "exclude": [
-      "app/www/**/*",
+      "platforms/**/*",
+      "plugins/**/*",
+      "www/**/*",
+      "**/*.d.ts",
       "**/*.spec.ts"
     ],
     "include": [
-      "app/**/*.ts"
+      "src/**/*.ts"
     ],
     "all": true
   },

@@ -307,10 +307,6 @@ export class Game {
         const pointAWorld = Vector.add(bodyA.position, pointA)
         const pointBWorld = Vector.add(bodyB.position, pointB)
 
-        if (!pointAWorld || !pointBWorld) {
-          return
-        }
-
         const delta = Vector.sub(pointAWorld, pointBWorld)
         const currentLength = Vector.magnitude(delta)
 

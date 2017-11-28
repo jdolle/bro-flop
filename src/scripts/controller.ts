@@ -15,6 +15,9 @@ type ActionsState =  {
   [action in PlayerActions]: boolean
 }
 
+/**
+ * Maps keystates to player action states
+ */
 export class PlayerController {
   private actionsState: ActionsState
 

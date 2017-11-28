@@ -1,9 +1,9 @@
-export default {
-  plugins: [
+{
+  "plugins": [
     "@babel/plugin-syntax-object-rest-spread",
-    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-proposal-object-rest-spread"
   ],
-  presets: [
+  "presets": [
     "@babel/preset-typescript",
     [
       "@babel/preset-env",
@@ -13,5 +13,5 @@ export default {
         }
       }
     ]
-  ],
+  ]
 }
