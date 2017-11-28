@@ -10,13 +10,18 @@ import {
   Body,
   Composite,
   Vector,
-  // Events,
+  Events,
   IChamferableBodyDefinition,
+  Constraint,
 } from 'matter-js'
 
 import { PlayerController, PlayerActions } from './controller'
 import { drawWorld } from './physicsRenderer'
 import { ragdoll } from './ragdoll'
+
+// NOTE needs to be in a component
+let leftArmGrapple: Constraint | undefined
+let rightArmGrapple: Constraint | undefined
 
 /**
  * Game. Handles the game loop and entity systems creation
@@ -34,6 +39,7 @@ export class Game {
     this.gameLoop = this.gameLoop.bind(this)
   }
 
+  // tslint:disable-next-line max-func-body-length
   public init() {
     // set up renderer
     this.renderer = PIXI.autoDetectRenderer(512, 512)
@@ -50,7 +56,7 @@ export class Game {
     const ragdolls = Composite.create()
     this.playerRagdoll = ragdoll(100, 200, 0.5, {
       friction: 0.5,
-      frictionAir: 0.1,
+      frictionAir: 0.02,
     })
 
     Composite.add(ragdolls, this.playerRagdoll)
@@ -65,7 +71,7 @@ export class Game {
     }
     const ground = Bodies.rectangle(
       this.renderer.width / 2,
-      this.renderer.height + groundThickness,
+      this.renderer.height, // + groundThickness,
       this.renderer.width + groundThickness * 2,
       groundThickness,
       groundOptions,
@@ -95,16 +101,71 @@ export class Game {
       groundOptions,
     )
 
-    // Events.on(this.engine, 'collisionStart', (event) => {
-    //   const { pairs } = event
-    //   for (const pair of pairs) {
-    //     if (pair.bodyA.label === 'wall') {
-    //       // Body.applyForce(pair.bodyB, pair.bodyA.position, Vector.create(0.01))
-    //     } else if (pair.bodyB.label === 'wall') {
-    //       Body.applyForce(pair.bodyA, pair.bodyB.position, Vector.create(0.01))
-    //     }
-    //   }
-    // })
+    // Grapple logic
+    Events.on(this.engine, 'collisionStart', (event) => {
+      const { pairs } = event
+      for (const pair of pairs) {
+        if (pair.bodyB.label === 'wall') {
+          const isLeftArmA = pair.bodyA.label === 'leftLowerArm'
+          const isRightArmA = pair.bodyA.label === 'rightLowerArm'
+
+          if (isLeftArmA && leftArmGrapple !== undefined) {
+            return
+          }
+
+          if (isRightArmA && rightArmGrapple !== undefined) {
+            return
+          }
+
+          if (isLeftArmA || isRightArmA) {
+            const constraint = Constraint.create({
+              label: 'grapple',
+              bodyA: pair.bodyA,
+              bodyB: pair.bodyB,
+              pointA: Vector.sub(pair.activeContacts[0].vertex, pair.bodyA.position),
+              pointB: Vector.sub(pair.activeContacts[0].vertex, pair.bodyB.position),
+              stiffness: 0.2,
+            })
+            World.add(this.engine.world, constraint)
+
+            if (isLeftArmA) {
+              leftArmGrapple = constraint
+            } else if (isRightArmA) {
+              rightArmGrapple = constraint
+            }
+          }
+        } else if (pair.bodyA.label === 'wall') {
+          const isLeftArmB = pair.bodyB.label === 'leftLowerArm'
+          const isRightArmB = pair.bodyB.label === 'rightLowerArm'
+
+          if (isLeftArmB && leftArmGrapple !== undefined) {
+            return
+          }
+
+          if (isRightArmB && rightArmGrapple !== undefined) {
+            return
+          }
+
+          if (isLeftArmB || isRightArmB) {
+            const constraint = Constraint.create({
+              label: 'grapple',
+              bodyA: pair.bodyA,
+              bodyB: pair.bodyB,
+              pointA: Vector.sub(pair.activeContacts[0].vertex, pair.bodyA.position),
+              pointB: Vector.sub(pair.activeContacts[0].vertex, pair.bodyB.position),
+              stiffness: 0.2,
+            })
+            World.add(this.engine.world, constraint)
+
+            if (isLeftArmB) {
+              leftArmGrapple = constraint
+            } else if (isRightArmB) {
+              rightArmGrapple = constraint
+            }
+          }
+        }
+      }
+    })
 
     this.engine.world.gravity.scale *= -2 // reverse gravity
 
@@ -124,6 +185,7 @@ export class Game {
     const { state } = this.playerController
     const ragdollBodies = Composite.allBodies(this.playerRagdoll)
 
+    // apply constant force to chest
     const chest = ragdollBodies.find((body) => {
       return body.label === 'chest'
     })
@@ -134,10 +196,11 @@ export class Game {
       Body.applyForce(
         chest,
         chest.position,
-        Vector.create(gravity.x * gravity.scale * -1, gravity.y * gravity.scale * -1),
+        Vector.create(gravity.x * gravity.scale * -1.5, gravity.y * gravity.scale * -1.5),
       )
     }
 
+    // Move limbs based on player actions
     if (state[PlayerActions.activateLeftFoot]) {
       const leftLeg = ragdollBodies.find((body) => {
         return body.label === 'leftLowerLeg'
@@ -234,7 +297,36 @@ export class Game {
       }
     }
 
-    Engine.update(this.engine, 1000 / 100)
+    // if the player is grabbing something, check if the grip should be
+    // removed based on distance (which is based on how much force the player is
+    // applying away from the grabbed body.
+    for (const constraint of this.engine.world.constraints) {
+      if (constraint.label === 'grapple') {
+        const { bodyA, pointA, bodyB, pointB } = constraint
+
+        const pointAWorld = Vector.add(bodyA.position, pointA)
+        const pointBWorld = Vector.add(bodyB.position, pointB)
+
+        if (!pointAWorld || !pointBWorld) {
+          return
+        }
+
+        const delta = Vector.sub(pointAWorld, pointBWorld)
+        const currentLength = Vector.magnitude(delta)
+
+        if (currentLength > 3) {
+          if (bodyA.label === 'leftLowerArm') {
+            leftArmGrapple = undefined
+          }
+          if (bodyA.label === 'rightLowerArm') {
+            rightArmGrapple = undefined
+          }
+          Composite.remove(this.engine.world, constraint)
+        }
+      }
+    }
+
+    Engine.update(this.engine, 1000 / 200)
   }
 
   public draw() {
