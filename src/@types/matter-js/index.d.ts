@@ -2801,7 +2801,7 @@ declare module 'matter-js' {
            * @param {vector} [output]
            * @return {vector} A new vector of vectorA and vectorB subtracted
            */
-          static sub(vectorA: Vector, vectorB: Vector, optional?: Vector): Vector;
+          static sub(vectorA: Vector, vectorB: Vector, output?: Vector): Vector;
       }
 
       /**

@@ -16,17 +16,47 @@ import {
 } from 'matter-js'
 
 import { PlayerController, PlayerActions } from './controller'
-import { drawWorld } from './physicsRenderer'
+import { drawWorld, initRenderer } from './physicsRenderer'
 import { ragdoll } from './ragdoll'
 
 // NOTE needs to be in a component
 let leftArmGrapple: Constraint | undefined
 let rightArmGrapple: Constraint | undefined
 
+const isRightLeg = (body: Body) => {
+  return body.label === 'rightLowerLeg'
+}
+const isRightArm = (body: Body) => {
+  return body.label === 'rightLowerArm'
+}
+const isLeftLeg = (body: Body) => {
+  return body.label === 'leftLowerLeg'
+}
+const isLeftArm = (body: Body) => {
+  return body.label === 'leftLowerArm'
+}
+const isChest = (body: Body) => {
+  return body.label === 'chest'
+}
+
 /**
  * Game. Handles the game loop and entity systems creation
  */
 export class Game {
+  private static readonly FORCE_LEFT = Vector.create(-0.005, 0)
+  private static readonly FORCE_RIGHT = Vector.create(0.005, 0)
+  private static readonly FORCE_UP = Vector.create(0, -0.005)
+  private static readonly FORCE_DOWN = Vector.create(0, 0.005)
+
+  // pool of vectors for use in #update(). Not thread safe.
+  private static tmpUpdateVectors = [
+    Vector.create(),
+    Vector.create(),
+    Vector.create(),
+    Vector.create(),
+  ]
+
+  private stage: PIXI.Container
   private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer
   private engine: Engine
 
@@ -39,9 +69,9 @@ export class Game {
     this.gameLoop = this.gameLoop.bind(this)
   }
 
-  // tslint:disable-next-line max-func-body-length
-  public init() {
+  public init() { // tslint:disable-line max-func-body-length
     // set up renderer
+    this.stage = new PIXI.Container()
     this.renderer = PIXI.autoDetectRenderer(512, 512)
     document.body.appendChild(this.renderer.view)
 
@@ -171,6 +201,8 @@ export class Game {
 
     World.add(this.engine.world, [ground, leftWall, rightWall, ceiling, ragdolls])
 
+    initRenderer(this.stage)
+
     this.gameLoop()
   }
 
@@ -180,119 +212,110 @@ export class Game {
     this.draw()
   }
 
-  // tslint:disable-next-line cyclomatic-complexity max-func-body-length
-  public update() {
+  public update() { // tslint:disable-line cyclomatic-complexity max-func-body-length
     const { state } = this.playerController
-    const ragdollBodies = Composite.allBodies(this.playerRagdoll)
+    const ragdollBodies = this.playerRagdoll.bodies
 
     // apply constant force to chest
-    const chest = ragdollBodies.find((body) => {
-      return body.label === 'chest'
-    })
+    const chest = ragdollBodies.find(isChest)
 
     if (chest !== undefined) {
       const { gravity } = this.engine.world
 
+      Game.tmpUpdateVectors[0].x = gravity.x * gravity.scale * -1.5
+      Game.tmpUpdateVectors[0].y = gravity.y * gravity.scale * -1.5
       Body.applyForce(
         chest,
         chest.position,
-        Vector.create(gravity.x * gravity.scale * -1.5, gravity.y * gravity.scale * -1.5),
+        Game.tmpUpdateVectors[0],
       )
     }
 
     // Move limbs based on player actions
     if (state[PlayerActions.activateLeftFoot]) {
-      const leftLeg = ragdollBodies.find((body) => {
-        return body.label === 'leftLowerLeg'
-      })
+      const leftLeg = ragdollBodies.find(isLeftLeg)
 
       if (leftLeg !== undefined) {
         if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(leftLeg, leftLeg.position, Vector.create(-0.005, 0))
+          Body.applyForce(leftLeg, leftLeg.position, Game.FORCE_LEFT)
         }
 
         if (state[PlayerActions.moveRight]) {
-          Body.applyForce(leftLeg, leftLeg.position, Vector.create(0.005, 0))
+          Body.applyForce(leftLeg, leftLeg.position, Game.FORCE_RIGHT)
         }
 
         if (state[PlayerActions.moveUp]) {
-          Body.applyForce(leftLeg, leftLeg.position, Vector.create(0, -0.005))
+          Body.applyForce(leftLeg, leftLeg.position, Game.FORCE_UP)
         }
 
         if (state[PlayerActions.moveDown]) {
-          Body.applyForce(leftLeg, leftLeg.position, Vector.create(0, 0.005))
+          Body.applyForce(leftLeg, leftLeg.position, Game.FORCE_DOWN)
         }
       }
     }
 
     if (state[PlayerActions.activateRightFoot]) {
-      const rightLeg = ragdollBodies.find((body) => {
-        return body.label === 'rightLowerLeg'
-      })
+      const rightLeg = ragdollBodies.find(isRightLeg)
 
       if (rightLeg !== undefined) {
         if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(rightLeg, rightLeg.position, Vector.create(-0.005, 0))
+          Body.applyForce(rightLeg, rightLeg.position, Game.FORCE_LEFT)
         }
 
         if (state[PlayerActions.moveRight]) {
-          Body.applyForce(rightLeg, rightLeg.position, Vector.create(0.005, 0))
+          Body.applyForce(rightLeg, rightLeg.position, Game.FORCE_RIGHT)
         }
 
         if (state[PlayerActions.moveUp]) {
-          Body.applyForce(rightLeg, rightLeg.position, Vector.create(0, -0.005))
+          Body.applyForce(rightLeg, rightLeg.position, Game.FORCE_UP)
         }
 
         if (state[PlayerActions.moveDown]) {
-          Body.applyForce(rightLeg, rightLeg.position, Vector.create(0, 0.005))
+          Body.applyForce(rightLeg, rightLeg.position, Game.FORCE_DOWN)
         }
       }
     }
 
     if (state[PlayerActions.activateRightHand]) {
-      const rightArm = ragdollBodies.find((body) => {
-        return body.label === 'rightLowerArm'
-      })
+      const rightArm = ragdollBodies.find(isRightArm)
 
       if (rightArm !== undefined) {
         if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(rightArm, rightArm.position, Vector.create(-0.005, 0))
+          Body.applyForce(rightArm, rightArm.position, Game.FORCE_LEFT)
         }
 
         if (state[PlayerActions.moveRight]) {
-          Body.applyForce(rightArm, rightArm.position, Vector.create(0.005, 0))
+          Body.applyForce(rightArm, rightArm.position, Game.FORCE_RIGHT)
         }
 
         if (state[PlayerActions.moveUp]) {
-          Body.applyForce(rightArm, rightArm.position, Vector.create(0, -0.005))
+          Body.applyForce(rightArm, rightArm.position, Game.FORCE_UP)
         }
 
         if (state[PlayerActions.moveDown]) {
-          Body.applyForce(rightArm, rightArm.position, Vector.create(0, 0.005))
+          Body.applyForce(rightArm, rightArm.position, Game.FORCE_DOWN)
         }
       }
     }
 
     if (state[PlayerActions.activateLeftHand]) {
-      const leftArm = ragdollBodies.find((body) => {
-        return body.label === 'leftLowerArm'
-      })
+      const leftArm = ragdollBodies.find(isLeftArm)
 
       if (leftArm !== undefined) {
         if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(leftArm, leftArm.position, Vector.create(-0.005, 0))
+          Body.applyForce(leftArm, leftArm.position, Game.FORCE_LEFT)
         }
 
         if (state[PlayerActions.moveRight]) {
-          Body.applyForce(leftArm, leftArm.position, Vector.create(0.005, 0))
+          Body.applyForce(leftArm, leftArm.position, Game.FORCE_RIGHT)
         }
 
         if (state[PlayerActions.moveUp]) {
-          Body.applyForce(leftArm, leftArm.position, Vector.create(0, -0.005))
+          Body.applyForce(leftArm, leftArm.position, Game.FORCE_UP)
         }
 
         if (state[PlayerActions.moveDown]) {
-          Body.applyForce(leftArm, leftArm.position, Vector.create(0, 0.005))
+          Body.applyForce(leftArm, leftArm.position, Game.FORCE_DOWN)
         }
       }
     }
@@ -304,10 +327,10 @@ export class Game {
       if (constraint.label === 'grapple') {
         const { bodyA, pointA, bodyB, pointB } = constraint
 
-        const pointAWorld = Vector.add(bodyA.position, pointA)
-        const pointBWorld = Vector.add(bodyB.position, pointB)
+        const pointAWorld = Vector.add(bodyA.position, pointA, Game.tmpUpdateVectors[1])
+        const pointBWorld = Vector.add(bodyB.position, pointB, Game.tmpUpdateVectors[2])
 
-        const delta = Vector.sub(pointAWorld, pointBWorld)
+        const delta = Vector.sub(pointAWorld, pointBWorld, Game.tmpUpdateVectors[3])
         const currentLength = Vector.magnitude(delta)
 
         if (currentLength > 3) {
@@ -326,10 +349,7 @@ export class Game {
   }
 
   public draw() {
-    const stage = new PIXI.Container()
-
-    drawWorld(stage, this.engine.world)
-
-    this.renderer.render(stage)
+    drawWorld(this.stage, this.engine.world)
+    this.renderer.render(this.stage)
   }
 }

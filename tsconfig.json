@@ -4,7 +4,6 @@
     "noEmit": true,
     "allowJs": true,
     "target": "esnext",
-    "module": "esnext",
     "noUnusedLocals": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
