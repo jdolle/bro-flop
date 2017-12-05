@@ -23,6 +23,8 @@ export class PlayerControllerComponent implements BaseComponent {
   }
 
   public static Release(component: PlayerControllerComponent) {
+    delete component.state.playerController
+
     return true
   }
 }
