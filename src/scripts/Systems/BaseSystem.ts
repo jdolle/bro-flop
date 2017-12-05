@@ -1,6 +1,6 @@
-import { Entity } from '../Entity'
-import { Signature } from '../EntitySignatures'
-import { CES } from '../index'
+import { Entity } from '../ces/Entity'
+import { Signature } from '../ces/EntitySignatures'
+import { CES } from '../ces'
 
 /**
  * BaseSystem

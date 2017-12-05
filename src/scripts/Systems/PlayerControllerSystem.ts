@@ -1,15 +1,16 @@
-import { CES } from '../index'
-import { BaseSystem } from './BaseSystem'
-import { Entity } from '../Entity'
-import { ComponentType } from '../Components/ComponentType'
 import {
   Body,
   Vector,
 } from 'matter-js'
+
+import { CES } from '../ces/'
+import { Entity } from '../ces/Entity'
+import { ComponentType } from '../ces/Components/ComponentType'
 import {
   PlayerController,
   PlayerActions,
-} from '../../controller'
+} from '../controller'
+import { BaseSystem } from './BaseSystem'
 
 /**
  * Helpers for finding specific physics bodies

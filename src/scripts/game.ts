@@ -12,8 +12,8 @@ import {
   Constraint,
 } from 'matter-js'
 
-import { PhysicsSystem } from './ces/Systems/PhysicsSystem'
-import { PlayerControllerSystem } from './ces/Systems/PlayerControllerSystem'
+import { PhysicsSystem } from './Systems/PhysicsSystem'
+import { PlayerControllerSystem } from './Systems/PlayerControllerSystem'
 import { createPlayer } from './Factories/PlayerFactory'
 import { createBoundaries } from './Factories/BoundariesFactory'
 import { drawWorld, initRenderer } from './physicsRenderer'

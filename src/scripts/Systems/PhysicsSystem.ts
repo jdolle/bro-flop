@@ -3,10 +3,11 @@ import {
   World,
   Body,
 } from 'matter-js'
+
 import { BaseSystem } from './BaseSystem'
-import { Entity } from '../Entity'
-import { PhysicsComponent } from '../Components/PhysicsComponent'
-import { CES } from '../index'
+import { Entity } from '../ces/Entity'
+import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
+import { CES } from '../ces/'
 
 const tempVector = Vector.create() // reusable vector to avoid allocation
 
