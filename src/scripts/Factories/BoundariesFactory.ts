@@ -4,8 +4,8 @@ import {
   IChamferableBodyDefinition,
   Composite,
 } from 'matter-js'
-import { World as EntitySystem } from '../World'
-import { PhysicsComponent } from '../Components/PhysicsComponent'
+import { World as EntitySystem } from '../ces/World'
+import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
 
 export const createBoundaries = (entitySystem: EntitySystem, world: World, width: number, height: number) => {
   const entity = entitySystem.createEntity()

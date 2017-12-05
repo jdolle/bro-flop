@@ -1,11 +1,11 @@
 import { World } from 'matter-js'
 
-import { Entity } from '../Entity'
-import { PlayerControllerComponent } from '../Components/PlayerControllerComponent'
-import { PositionComponent } from '../Components/PositionComponent'
-import { PhysicsComponent } from '../Components/PhysicsComponent'
-import { World as EntitySystem } from '../World'
-import { ragdoll } from '../../ragdoll'
+import { Entity } from '../ces/Entity'
+import { PlayerControllerComponent } from '../ces/Components/PlayerControllerComponent'
+import { PositionComponent } from '../ces/Components/PositionComponent'
+import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
+import { World as EntitySystem } from '../ces/World'
+import { ragdoll } from '../ragdoll'
 
 const addPositionComponent = (entitySystem: EntitySystem, entity: Entity) => {
   const p = PositionComponent.Create(1.0, 2.0)

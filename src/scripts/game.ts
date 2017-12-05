@@ -14,8 +14,8 @@ import {
 
 import { PhysicsSystem } from './ces/Systems/PhysicsSystem'
 import { PlayerControllerSystem } from './ces/Systems/PlayerControllerSystem'
-import { createPlayer } from './ces/Factories/PlayerFactory'
-import { createBoundaries } from './ces/Factories/BoundariesFactory'
+import { createPlayer } from './Factories/PlayerFactory'
+import { createBoundaries } from './Factories/BoundariesFactory'
 import { drawWorld, initRenderer } from './physicsRenderer'
 import { World as EntitySystem } from './ces/World'
 
