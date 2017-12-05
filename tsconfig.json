@@ -5,6 +5,7 @@
     "allowJs": true,
     "target": "esnext",
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   },
