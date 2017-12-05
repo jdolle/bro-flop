@@ -6,7 +6,7 @@ import {
 import { BaseSystem } from './BaseSystem'
 import { Entity } from '../Entity'
 import { PhysicsComponent } from '../Components/PhysicsComponent'
-import { World as EntitySystem } from '../World'
+import { CES } from '../index'
 
 const tempVector = Vector.create() // reusable vector to avoid allocation
 
@@ -15,14 +15,15 @@ const isChest = (body: Body) => {
 }
 
 /**
- * An example system that updates the position
+ * Physics system -- updates positions based on physics bodies and applies
+ * forces
  */
 export class PhysicsSystem extends BaseSystem {
   public readonly signature = PhysicsComponent.typeEnum
-  protected entitySystem: EntitySystem
+  protected entitySystem: CES
   private world: World
 
-  constructor(entitySystem: EntitySystem, world: World) {
+  constructor(entitySystem: CES, world: World) {
     super()
     this.entitySystem = entitySystem
     this.world = world

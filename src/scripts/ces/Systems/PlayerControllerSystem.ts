@@ -1,4 +1,4 @@
-import { World as EntitySystem } from '../World'
+import { CES } from '../index'
 import { BaseSystem } from './BaseSystem'
 import { Entity } from '../Entity'
 import { ComponentType } from '../Components/ComponentType'
@@ -11,6 +11,9 @@ import {
   PlayerActions,
 } from '../../controller'
 
+/**
+ * Helpers for finding specific physics bodies
+ */
 const isRightLeg = (body: Body) => {
   return body.label === 'rightLowerLeg'
 }
@@ -34,9 +37,9 @@ export class PlayerControllerSystem extends BaseSystem {
   private static readonly FORCE_DOWN = Vector.create(0, 0.005)
 
   public readonly signature = ComponentType.PHYSICS | ComponentType.PLAYER_CONTROLLER
-  protected entitySystem: EntitySystem
+  protected entitySystem: CES
 
-  constructor(entitySystem: EntitySystem) {
+  constructor(entitySystem: CES) {
     super()
     this.entitySystem = entitySystem
     this.processEntity = this.processEntity.bind(this)

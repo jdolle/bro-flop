@@ -17,7 +17,7 @@ import { PlayerControllerSystem } from './ces/Systems/PlayerControllerSystem'
 import { createPlayer } from './Factories/PlayerFactory'
 import { createBoundaries } from './Factories/BoundariesFactory'
 import { drawWorld, initRenderer } from './physicsRenderer'
-import { World as EntitySystem } from './ces/World'
+import { CES } from './ces'
 
 // NOTE needs to be in a component
 let leftArmGrapple: Constraint | undefined
@@ -38,7 +38,7 @@ export class Game {
   private stage: PIXI.Container
   private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer
   private engine: Engine
-  private entitySystem: EntitySystem
+  private entitySystem: CES
   private physicsSystem: PhysicsSystem
   private playerControllerSystem: PlayerControllerSystem
 
@@ -47,7 +47,7 @@ export class Game {
     this.stage = new PIXI.Container()
     this.engine = Engine.create({ enableSleeping: true })
     this.engine.world.gravity.scale *= -2 // reverse gravity
-    this.entitySystem = new EntitySystem()
+    this.entitySystem = new CES()
 
     // set up systems
     this.physicsSystem = new PhysicsSystem(this.entitySystem, this.engine.world)

@@ -1,4 +1,3 @@
-// TODO rename EntitySystem
 import { PositionComponent } from './Components/PositionComponent'
 import { PhysicsComponent } from './Components/PhysicsComponent'
 import { PlayerControllerComponent } from './Components/PlayerControllerComponent'
@@ -7,9 +6,9 @@ import { Entity } from './Entity'
 import { EntitySignatures } from './EntitySignatures'
 
 /**
- * A world filled with entities
+ * Component entity system - A world filled with entities
  */
-export class World {
+export class CES {
   public entitySignatures: EntitySignatures
   public positions: ComponentList<PositionComponent>
   public physics: ComponentList<PhysicsComponent>
