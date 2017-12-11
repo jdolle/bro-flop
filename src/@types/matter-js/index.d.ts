@@ -3346,5 +3346,10 @@ declare module 'matter-js' {
           static trigger(object: any, eventNames: string, event?: (e: any) => void): void;
 
       }
+
+      export class Plugin {
+        static use(module: object, ...plugins: string[]): void
+        static register(plugin: string | object): void
+      }
   }
 }

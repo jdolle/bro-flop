@@ -23,7 +23,7 @@ export class PositionComponent implements BaseComponent {
     return new PositionComponent(x, y)
   }
 
-  public static Release(component: PositionComponent) {
+  public static Release(_component: PositionComponent) {
     return true
   }
 }

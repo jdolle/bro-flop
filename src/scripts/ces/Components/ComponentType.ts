@@ -7,4 +7,5 @@ export enum ComponentType {
   POSITION = 0x001,
   PHYSICS = 0x002,
   PLAYER_CONTROLLER = 0x004,
+  GRAPPLE = 0x008,
 }

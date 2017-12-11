@@ -6,27 +6,17 @@ import {
 import { CES } from '../ces/'
 import { Entity } from '../ces/Entity'
 import { ComponentType } from '../ces/Components/ComponentType'
+import { BaseSystem } from '../ces/BaseSystem'
 import {
   PlayerController,
   PlayerActions,
 } from '../controller'
-import { BaseSystem } from './BaseSystem'
-
-/**
- * Helpers for finding specific physics bodies
- */
-const isRightLeg = (body: Body) => {
-  return body.label === 'rightLowerLeg'
-}
-const isRightArm = (body: Body) => {
-  return body.label === 'rightLowerArm'
-}
-const isLeftLeg = (body: Body) => {
-  return body.label === 'leftLowerLeg'
-}
-const isLeftArm = (body: Body) => {
-  return body.label === 'leftLowerArm'
-}
+import {
+  isLeftLeg,
+  isRightLeg,
+  isRightArm,
+  isLeftArm,
+} from '../bodyFilters'
 
 /**
  * Player controller system
@@ -140,6 +130,14 @@ export class PlayerControllerSystem extends BaseSystem {
         }
       }
     }
+  }
+
+  public onEntityRemoved(_entity: Entity) {
+    // do nothing
+  }
+
+  public onEntityAdded(_entity: Entity) {
+    // do nothing
   }
 
   public process(): void {

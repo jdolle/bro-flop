@@ -4,8 +4,9 @@ import { Entity } from '../ces/Entity'
 import { PlayerControllerComponent } from '../ces/Components/PlayerControllerComponent'
 import { PositionComponent } from '../ces/Components/PositionComponent'
 import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
+import { GrappleComponent } from '../ces/Components/GrappleComponent'
 import { CES } from '../ces'
-import { ragdoll } from '../ragdoll'
+import { createRagdoll } from './RagdollFactory'
 
 const addPositionComponent = (entitySystem: CES, entity: Entity) => {
   const p = PositionComponent.Create(1.0, 2.0)
@@ -13,7 +14,7 @@ const addPositionComponent = (entitySystem: CES, entity: Entity) => {
 }
 
 const addPhysicsComponent = (entitySystem: CES, entity: Entity, world: World) => {
-  const playerRagdoll = ragdoll(100, 200, 0.5, {
+  const playerRagdoll = createRagdoll(100, 200, 0.5, {
     friction: 0.5,
     frictionAir: 0.02,
   })
@@ -21,6 +22,11 @@ const addPhysicsComponent = (entitySystem: CES, entity: Entity, world: World) =>
 
   const p = PhysicsComponent.Create(playerRagdoll)
   entitySystem.physics.add(entity, p)
+}
+
+const addGrappleComponent = (entitySystem: CES, entity: Entity) => {
+  const p = GrappleComponent.Create()
+  entitySystem.grapples.add(entity, p)
 }
 
 const addPlayerControllerComponent = (entitySystem: CES, entity: Entity) => {
@@ -34,6 +40,7 @@ export const createPlayer = (entitySystem: CES, world: World) => {
   addPositionComponent(entitySystem, entity)
   addPhysicsComponent(entitySystem, entity, world)
   addPlayerControllerComponent(entitySystem, entity)
+  addGrappleComponent(entitySystem, entity)
 
   return entity
 }

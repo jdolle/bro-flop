@@ -4,16 +4,13 @@ import {
   Body,
 } from 'matter-js'
 
-import { BaseSystem } from './BaseSystem'
+import { BaseSystem } from '../ces/BaseSystem'
 import { Entity } from '../ces/Entity'
 import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
 import { CES } from '../ces/'
+import { isChest } from '../bodyFilters'
 
 const tempVector = Vector.create() // reusable vector to avoid allocation
-
-const isChest = (body: Body) => {
-  return body.label === 'chest'
-}
 
 /**
  * Physics system -- updates positions based on physics bodies and applies
@@ -30,6 +27,14 @@ export class PhysicsSystem extends BaseSystem {
     this.world = world
 
     this.processEntity = this.processEntity.bind(this)
+  }
+
+  public onEntityRemoved(_entity: Entity) {
+    // do nothing
+  }
+
+  public onEntityAdded(_entity: Entity) {
+    // do nothing
   }
 
   public process(): void {

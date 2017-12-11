@@ -18,7 +18,7 @@ const collisionFilter = () => {
 /**
  * Creates a ragdoll
  */
-export const ragdoll = (x: number, y: number, scale: number = 1, options?: {}) => {
+export const createRagdoll = (x: number, y: number, scale: number = 1, options?: {}) => {
 
     const headOptions = {
       label: 'head',

@@ -7,15 +7,36 @@ export type Signature = number
  * for fastchecking if it matches for systems.
  */
 export class EntitySignatures {
+  public onSignatureChange?: (
+    entity: Entity,
+    nextSignature: Signature,
+    signature: Signature,
+  ) => void
+
   private signatures: Signature[] = []
+
+  public static Matches(signature: Signature, mask: Signature) {
+    return mask === (signature & mask)
+  }
 
   public add(entity: Entity, signature: Signature) {
     const currentSignature = this.signatures[entity] === undefined ? 0 : this.signatures[entity]
-    this.signatures[entity] = currentSignature | signature
+    const nextSignature = currentSignature | signature
+    this.signatures[entity] = nextSignature
+
+    if (this.onSignatureChange !== undefined) {
+      this.onSignatureChange(entity, nextSignature, currentSignature)
+    }
   }
 
   public remove(entity: Entity, signature: Signature) {
-    this.signatures[entity] &= ~signature
+    const currentSignature = this.signatures[entity]
+    const nextSignature = currentSignature & ~signature
+    this.signatures[entity] = nextSignature
+
+    if (this.onSignatureChange !== undefined) {
+      this.onSignatureChange(entity, nextSignature, currentSignature)
+    }
   }
 
   public match(entity: Entity, signature: Signature): boolean {
