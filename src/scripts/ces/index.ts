@@ -2,6 +2,7 @@ import { PositionComponent } from './Components/PositionComponent'
 import { PhysicsComponent } from './Components/PhysicsComponent'
 import { PlayerControllerComponent } from './Components/PlayerControllerComponent'
 import { GrappleComponent } from './Components/GrappleComponent'
+import { SoundsComponent } from './Components/SoundsComponent'
 import { ComponentList } from './ComponentList'
 import { Entity } from './Entity'
 import { EntitySignatures, Signature } from './EntitySignatures'
@@ -16,6 +17,7 @@ export class CES {
   public physics: ComponentList<PhysicsComponent>
   public grapples: ComponentList<GrappleComponent>
   public playerController: ComponentList<PlayerControllerComponent>
+  public sounds: ComponentList<SoundsComponent>
 
   private nextEntity = 0
   private recycledEntities: Entity[] // TODO implement linked list or pool?
@@ -47,6 +49,7 @@ export class CES {
     this.physics = new ComponentList<PhysicsComponent>(this.entitySignatures)
     this.playerController = new ComponentList<PlayerControllerComponent>(this.entitySignatures)
     this.grapples = new ComponentList<GrappleComponent>(this.entitySignatures)
+    this.sounds = new ComponentList<SoundsComponent>(this.entitySignatures)
   }
 
   public createEntity(): Entity {
@@ -64,7 +67,8 @@ export class CES {
     this.positions.clear(entity)
     this.physics.clear(entity)
     this.playerController.clear(entity)
-    this.grapples.clear()
+    this.grapples.clear(entity)
+    this.sounds.clear(entity)
   }
 
   public clearEntities(): void {
@@ -75,6 +79,7 @@ export class CES {
     this.physics.clear()
     this.playerController.clear()
     this.grapples.clear()
+    this.sounds.clear()
   }
 
   public addSystem<T extends BaseSystem>(sys: T) {

@@ -9,10 +9,12 @@ import { MatterCollisionEvents } from 'matter-collision-events'
 import { PhysicsSystem } from './Systems/PhysicsSystem'
 import { PlayerControllerSystem } from './Systems/PlayerControllerSystem'
 import { GrappleSystem } from './Systems/GrappleSystem'
+import { SoundsSystem } from './Systems/SoundsSystem'
 import { createPlayer } from './Factories/PlayerFactory'
 import { createBoundaries } from './Factories/BoundariesFactory'
 import { drawWorld, initRenderer } from './physicsRenderer'
 import { CES } from './ces'
+import { EventQueue } from './EventQueue'
 
 /**
  * Game. Handles the game loop and entity systems creation
@@ -22,6 +24,7 @@ export class Game {
   private renderer: PIXI.WebGLRenderer | PIXI.CanvasRenderer
   private engine: Matter.Engine
   private entitySystem: CES
+  private eventQueue: EventQueue
 
   constructor() {
     this.renderer = PIXI.autoDetectRenderer(512, 512)
@@ -30,12 +33,14 @@ export class Game {
     Matter.Plugin.use(Matter, 'matter-collision-events')
     this.engine = Matter.Engine.create({ enableSleeping: true })
     this.engine.world.gravity.scale *= -2 // reverse gravity
+    this.eventQueue = new EventQueue()
     this.entitySystem = new CES()
 
     // set up systems
     this.entitySystem.addSystem(new PhysicsSystem(this.entitySystem, this.engine.world))
     this.entitySystem.addSystem(new PlayerControllerSystem(this.entitySystem))
-    this.entitySystem.addSystem(new GrappleSystem(this.entitySystem, this.engine))
+    this.entitySystem.addSystem(new GrappleSystem(this.entitySystem, this.engine, this.eventQueue))
+    this.entitySystem.addSystem(new SoundsSystem(this.entitySystem, this.eventQueue))
 
     this.update = this.update.bind(this)
     this.draw = this.draw.bind(this)

@@ -22,7 +22,7 @@ class App {
   // Bind any events that are required on startup. Common events are:
   // 'load', 'deviceready', 'offline', and 'online'.
   private bindEvents() {
-    document.addEventListener('deviceready', this.onDeviceReady, false)
+    document.addEventListener('deviceReady', this.onDeviceReady, false)
   }
 
   // deviceready Event Handler
@@ -30,14 +30,7 @@ class App {
   // The scope of 'this' is the event. In order to call the 'receivedEvent'
   // function, we must explicitly call 'app.receivedEvent(...);'
   private onDeviceReady() {
-    this.receivedEvent('deviceready')
-  }
-
-  // Update DOM on a Received Event
-  private receivedEvent(id: string) {
-      console.log(`Received Event: ${id}`)
-
-      new Game().init()
+    new Game().init()
   }
 }
 

@@ -14,6 +14,7 @@ import { Entity } from '../ces/Entity'
 import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
 import { GrappleComponent } from '../ces/Components/GrappleComponent'
 import { CES } from '../ces/'
+import { EventQueue } from '../EventQueue'
 import {
   isLeftArm,
   isRightArm,
@@ -34,11 +35,13 @@ export class GrappleSystem extends BaseSystem {
   public readonly signature = PhysicsComponent.typeEnum | GrappleComponent.typeEnum
   protected entitySystem: CES
   private engine: Engine
+  private eventQueue: EventQueue
 
-  constructor(entitySystem: CES, engine: Engine) {
+  constructor(entitySystem: CES, engine: Engine, eventQueue: EventQueue) {
     super()
     this.entitySystem = entitySystem
     this.engine = engine
+    this.eventQueue = eventQueue
 
     this.processEntity = this.processEntity.bind(this)
   }
@@ -68,6 +71,10 @@ export class GrappleSystem extends BaseSystem {
     World.add(engine.world, constraint)
 
     return constraint
+  }
+
+  private static collidesWithSelf(composite: Composite, pair: IPair) {
+    return composite.bodies.includes(pair.bodyA) && composite.bodies.includes(pair.bodyB)
   }
 
   public onEntityRemoved(entity: Entity) {
@@ -125,37 +132,41 @@ export class GrappleSystem extends BaseSystem {
     composite.bodies.forEach((body) => {
       if (isLeftArm(body)) {
         body.onCollide((pair: IPair) => {
-          if (pair.bodyB.label === 'wall' || pair.bodyA.label === 'wall') {
-            if (grapple.state.leftArmGrapple !== undefined) {
-              return
-            }
-
-            const constraint = GrappleSystem.grappleConstraint(
-              this.engine,
-              pair.activeContacts[0].vertex,
-              pair.bodyA,
-              pair.bodyB,
-            )
-
-            grapple.state.leftArmGrapple = constraint
+          if (GrappleSystem.collidesWithSelf(composite, pair)) {
+            return
           }
+
+          if (grapple.state.leftArmGrapple !== undefined) {
+            return
+          }
+
+          const constraint = GrappleSystem.grappleConstraint(
+            this.engine,
+            pair.activeContacts[0].vertex,
+            pair.bodyA,
+            pair.bodyB,
+          )
+
+          grapple.state.leftArmGrapple = constraint
         })
       } else if (isRightArm(body)) {
         body.onCollide((pair: IPair) => {
-          if (pair.bodyB.label === 'wall' || pair.bodyA.label === 'wall') {
-            if (grapple.state.rightArmGrapple !== undefined) {
-              return
-            }
-
-            const constraint = GrappleSystem.grappleConstraint(
-              this.engine,
-              pair.activeContacts[0].vertex,
-              pair.bodyA,
-              pair.bodyB,
-            )
-
-            grapple.state.rightArmGrapple = constraint
+          if (GrappleSystem.collidesWithSelf(composite, pair)) {
+            return
           }
+
+          if (grapple.state.rightArmGrapple !== undefined) {
+            return
+          }
+
+          const constraint = GrappleSystem.grappleConstraint(
+            this.engine,
+            pair.activeContacts[0].vertex,
+            pair.bodyA,
+            pair.bodyB,
+          )
+
+          grapple.state.rightArmGrapple = constraint
         })
       }
     })
@@ -180,11 +191,13 @@ export class GrappleSystem extends BaseSystem {
     if (leftArmGrapple !== undefined && GrappleSystem.isStretchedTooFar(leftArmGrapple)) {
       Composite.remove(this.engine.world, leftArmGrapple)
       grapple.state.leftArmGrapple = undefined
+      this.eventQueue.dispatch(entity, 'grapple_release')
     }
 
     if (rightArmGrapple !== undefined && GrappleSystem.isStretchedTooFar(rightArmGrapple)) {
       Composite.remove(this.engine.world, rightArmGrapple)
       grapple.state.rightArmGrapple = undefined
+      this.eventQueue.dispatch(entity, 'grapple_release')
     }
   }
 }
