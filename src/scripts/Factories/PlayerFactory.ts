@@ -15,8 +15,14 @@ const addPositionComponent = (entitySystem: CES, entity: Entity) => {
   entitySystem.positions.add(entity, p)
 }
 
-const addPhysicsComponent = (entitySystem: CES, entity: Entity, world: World) => {
-  const playerRagdoll = createRagdoll(100, 200, 0.5, {
+const addPhysicsComponent = (
+  entitySystem: CES,
+  entity: Entity,
+  world: World,
+  x: number,
+  y: number,
+) => {
+  const playerRagdoll = createRagdoll(x, y, 0.5, {
     friction: 0.5,
     frictionAir: 0.02,
   })
@@ -46,11 +52,11 @@ const addSoundsComponent = (entitySystem: CES, entity: Entity) => {
   entitySystem.sounds.add(entity, c)
 }
 
-export const createPlayer = (entitySystem: CES, world: World) => {
+export const createPlayer = (entitySystem: CES, world: World, x: number, y: number) => {
   const entity = entitySystem.createEntity()
 
   addPositionComponent(entitySystem, entity)
-  addPhysicsComponent(entitySystem, entity, world)
+  addPhysicsComponent(entitySystem, entity, world, x, y)
   addPlayerControllerComponent(entitySystem, entity)
   addGrappleComponent(entitySystem, entity)
   addSoundsComponent(entitySystem, entity)

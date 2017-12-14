@@ -52,7 +52,8 @@ export class Game {
 
     initRenderer(this.stage)
 
-    createPlayer(this.entitySystem, this.engine.world)
+    createPlayer(this.entitySystem, this.engine.world, 400, 200)
+    createPlayer(this.entitySystem, this.engine.world, 50, 200)
     createBoundaries(this.entitySystem, this.engine.world, this.renderer.width, this.renderer.height)
 
     this.gameLoop()
