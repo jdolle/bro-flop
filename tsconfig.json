@@ -7,7 +7,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": false
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*.ts"

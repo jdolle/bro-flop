@@ -65,7 +65,7 @@ export class Game {
   }
 
   public draw() {
-    drawWorld(this.stage, this.engine.world)
+    drawWorld(this.engine.world)
     this.renderer.render(this.stage)
   }
 

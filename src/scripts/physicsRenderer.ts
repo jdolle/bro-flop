@@ -18,7 +18,7 @@ const bodyFillColor = (body: Body) => {
   return 0x00ff00
 }
 
-export const drawBodies = (stage: PIXI.Container, bodies: Body[]) => {
+export const drawBodies = (bodies: Body[]) => {
   boxesGfx.lineStyle(2, 0xff00ff)
 
   for (const body of bodies) {
@@ -31,7 +31,7 @@ export const drawBodies = (stage: PIXI.Container, bodies: Body[]) => {
   }
 }
 
-export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]) => {
+export const drawConstraints = (constraints: Constraint[]) => {
   constraintsGfx.clear()
   for (const constraint of constraints) {
     const { position: positionA } = constraint.bodyA
@@ -42,15 +42,15 @@ export const drawConstraints = (stage: PIXI.Container, constraints: Constraint[]
   }
 }
 
-export const drawComposites = (stage: PIXI.Container, composites: Composite[], showConstraints = true) => {
+export const drawComposites = (composites: Composite[], showConstraints = true) => {
   for (const composite of composites) {
-    drawBodies(stage, composite.bodies)
+    drawBodies(composite.bodies)
     if (showConstraints === true) {
-      drawConstraints(stage, composite.constraints)
+      drawConstraints(composite.constraints)
     }
 
     if (composite.composites.length > 0) {
-      drawComposites(stage, composite.composites, showConstraints)
+      drawComposites(composite.composites, showConstraints)
     }
   }
 }
@@ -60,9 +60,9 @@ export const initRenderer = (stage: PIXI.Container) => {
   stage.addChild(constraintsGfx)
 }
 
-export const drawWorld = (stage: PIXI.Container, world: World) => {
+export const drawWorld = (world: World) => {
   boxesGfx.clear()
   constraintsGfx.clear()
-  drawComposites(stage, world.composites)
-  drawBodies(stage, world.bodies)
+  drawComposites(world.composites)
+  drawBodies(world.bodies)
 }
