@@ -16,9 +16,11 @@ import { GrappleComponent } from '../ces/Components/GrappleComponent'
 import { CES } from '../ces/'
 import { EventQueue } from '../EventQueue'
 import {
-  isLeftArm,
-  isRightArm,
+  isLeftHand,
+  isRightHand,
 } from '../bodyFilters'
+
+const MAX_GRAPPLE_DISTANCE = 3.5
 
 // pool of vectors for use in #update(). Not thread safe.
 const tmpUpdateVectors = [
@@ -55,7 +57,7 @@ export class GrappleSystem extends BaseSystem {
     const delta = Vector.sub(pointAWorld, pointBWorld, tmpUpdateVectors[3])
     const currentLength = Vector.magnitude(delta)
 
-    return currentLength > 3
+    return currentLength > MAX_GRAPPLE_DISTANCE
   }
 
   private static grappleConstraint(engine: Engine, vert: IVertex, bodyA: Body, bodyB: Body) {
@@ -65,7 +67,7 @@ export class GrappleSystem extends BaseSystem {
       bodyB,
       pointA: Vector.sub(vert, bodyA.position),
       pointB: Vector.sub(vert, bodyB.position),
-      stiffness: 0.2,
+      stiffness: 0.25,
     })
 
     World.add(engine.world, constraint)
@@ -77,6 +79,10 @@ export class GrappleSystem extends BaseSystem {
     return composite.bodies.includes(pair.bodyA) && composite.bodies.includes(pair.bodyB)
   }
 
+  private static collidesWithWall(pair: IPair) {
+    return pair.bodyA.label === 'wall' || pair.bodyB.label === 'wall'
+  }
+
   public onEntityRemoved(entity: Entity) {
     const physics = this.entitySystem.physics.find(entity)
     const grapple = this.entitySystem.grapples.find(entity)
@@ -86,7 +92,7 @@ export class GrappleSystem extends BaseSystem {
 
       if (composite !== undefined) {
         composite.bodies.forEach((body) => {
-          if (isLeftArm(body) || isRightArm(body)) {
+          if (isLeftHand(body) || isRightHand(body)) {
             body.onCollide(undefined)
           }
         })
@@ -130,8 +136,12 @@ export class GrappleSystem extends BaseSystem {
     }
 
     composite.bodies.forEach((body) => {
-      if (isLeftArm(body)) {
+      if (isLeftHand(body)) {
         body.onCollide((pair: IPair) => {
+          // if (GrappleSystem.collidesWithWall(pair)) {
+          //   return
+          // }
+
           if (GrappleSystem.collidesWithSelf(composite, pair)) {
             return
           }
@@ -149,8 +159,12 @@ export class GrappleSystem extends BaseSystem {
 
           grapple.state.leftArmGrapple = constraint
         })
-      } else if (isRightArm(body)) {
+      } else if (isRightHand(body)) {
         body.onCollide((pair: IPair) => {
+          // if (GrappleSystem.collidesWithWall(pair)) {
+          //   return
+          // }
+
           if (GrappleSystem.collidesWithSelf(composite, pair)) {
             return
           }

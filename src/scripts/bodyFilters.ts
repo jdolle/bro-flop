@@ -20,6 +20,14 @@ export const isLeftArm = (body: Body) => {
   return body.label === 'leftLowerArm'
 }
 
+export const isLeftHand = (body: Body) => {
+  return body.label === 'leftHand'
+}
+
+export const isRightHand = (body: Body) => {
+  return body.label === 'rightHand'
+}
+
 export const isChest = (body: Body) => {
   return body.label === 'chest'
 }

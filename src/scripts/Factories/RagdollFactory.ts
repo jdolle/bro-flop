@@ -52,6 +52,13 @@ export const createRagdoll = (x: number, y: number, scale: number = 1, options?:
       label: 'leftLowerArm',
     }
 
+    const leftHandOptions = {
+      ...leftArmOptions,
+      label: 'leftHand',
+      isSensor: true,
+      inertia: Infinity,
+    }
+
     const rightArmOptions = {
       label: 'rightArm',
       collisionFilter: collisionFilter(),
@@ -64,6 +71,13 @@ export const createRagdoll = (x: number, y: number, scale: number = 1, options?:
     const rightLowerArmOptions = {
       ...rightArmOptions,
       label: 'rightLowerArm',
+    }
+
+    const rightHandOptions = {
+      ...rightArmOptions,
+      label: 'rightHand',
+      isSensor: true,
+      inertia: Infinity,
     }
 
     const leftLegOptions = {
@@ -104,6 +118,9 @@ export const createRagdoll = (x: number, y: number, scale: number = 1, options?:
     const leftLowerLeg = Bodies.rectangle(x - 20 * scale, y + 97 * scale, 20 * scale, 60 * scale, leftLowerLegOptions)
     const rightUpperLeg = Bodies.rectangle(x + 20 * scale, y + 57 * scale, 20 * scale, 40 * scale, rightLegOptions)
     const rightLowerLeg = Bodies.rectangle(x + 20 * scale, y + 97 * scale, 20 * scale, 60 * scale, rightLowerLegOptions)
+
+    const leftHand = Bodies.rectangle(x - 39 * scale, y + 45 * scale, 22 * scale, 22 * scale, leftHandOptions)
+    const rightHand = Bodies.rectangle(x + 39 * scale, y + 45 * scale, 22 * scale, 22 * scale, rightHandOptions)
 
     const chestToRightUpperArm = Constraint.create({
       bodyA: chest,
@@ -177,23 +194,36 @@ export const createRagdoll = (x: number, y: number, scale: number = 1, options?:
       stiffness: 0.6,
     })
 
-    // const legToLeg = Constraint.create({
-    //   bodyA: leftLowerLeg,
-    //   bodyB: rightLowerLeg,
-    //   stiffness: 0.001,
-    // })
+    const lowerLeftArmToHand = Constraint.create({
+      bodyA: leftLowerArm,
+      bodyB: leftHand,
+      pointA: Vector.create(0, 25 * scale),
+      pointB: Vector.create(0, 0 * scale),
+      stiffness: 1,
+      length: 0,
+    })
+
+    const lowerRightArmToHand = Constraint.create({
+      bodyA: rightLowerArm,
+      bodyB: rightHand,
+      pointA: Vector.create(0, 25 * scale),
+      pointB: Vector.create(0, 0 * scale),
+      stiffness: 1,
+      length: 0,
+    })
 
     return Composite.create({
       bodies: [
         chest, head, leftLowerArm, leftUpperArm,
         rightLowerArm, rightUpperArm, leftLowerLeg,
         rightLowerLeg, leftUpperLeg, rightUpperLeg,
+        leftHand, rightHand,
       ],
       constraints: [
         upperToLowerLeftArm, upperToLowerRightArm, chestToLeftUpperArm,
         chestToRightUpperArm, headContraint, upperToLowerLeftLeg,
         upperToLowerRightLeg, chestToLeftUpperLeg, chestToRightUpperLeg,
-        // legToLeg,
+        lowerLeftArmToHand, lowerRightArmToHand,
       ],
     })
 }

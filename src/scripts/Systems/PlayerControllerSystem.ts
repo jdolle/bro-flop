@@ -7,25 +7,24 @@ import { CES } from '../ces/'
 import { Entity } from '../ces/Entity'
 import { ComponentType } from '../ces/Components/ComponentType'
 import { BaseSystem } from '../ces/BaseSystem'
-import {
-  PlayerController,
-  PlayerActions,
-} from '../controller'
+import { PlayerActions } from '../controller'
 import {
   isLeftLeg,
   isRightLeg,
-  isRightArm,
-  isLeftArm,
+  isRightHand,
+  isLeftHand,
+  isChest,
 } from '../bodyFilters'
 
 /**
  * Player controller system
  */
 export class PlayerControllerSystem extends BaseSystem {
-  private static readonly FORCE_LEFT = Vector.create(-0.005, 0)
-  private static readonly FORCE_RIGHT = Vector.create(0.005, 0)
-  private static readonly FORCE_UP = Vector.create(0, -0.005)
-  private static readonly FORCE_DOWN = Vector.create(0, 0.005)
+  private static tmpVector = Vector.create(0, 0)
+  private static readonly FORCE_LEFT = Vector.create(-0.003, 0)
+  private static readonly FORCE_RIGHT = Vector.create(0.003, 0)
+  private static readonly FORCE_UP = Vector.create(0, -0.003)
+  private static readonly FORCE_DOWN = Vector.create(0, 0.003)
 
   public readonly signature = ComponentType.PHYSICS | ComponentType.PLAYER_CONTROLLER
   protected entitySystem: CES
@@ -36,99 +35,11 @@ export class PlayerControllerSystem extends BaseSystem {
     this.processEntity = this.processEntity.bind(this)
   }
 
-  private static moveLeftLeg(state: PlayerController['state'], ragdollBodies: Body[]) {
-    if (state[PlayerActions.activateLeftFoot]) {
-      const leftLeg = ragdollBodies.find(isLeftLeg)
+  private static moveBody(force: Vector, ragdollBodies: Body[], filter: (b: Body) => boolean) {
+    const body = ragdollBodies.find(filter)
 
-      if (leftLeg !== undefined) {
-        if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(leftLeg, leftLeg.position, PlayerControllerSystem.FORCE_LEFT)
-        }
-
-        if (state[PlayerActions.moveRight]) {
-          Body.applyForce(leftLeg, leftLeg.position, PlayerControllerSystem.FORCE_RIGHT)
-        }
-
-        if (state[PlayerActions.moveUp]) {
-          Body.applyForce(leftLeg, leftLeg.position, PlayerControllerSystem.FORCE_UP)
-        }
-
-        if (state[PlayerActions.moveDown]) {
-          Body.applyForce(leftLeg, leftLeg.position, PlayerControllerSystem.FORCE_DOWN)
-        }
-      }
-    }
-  }
-
-  private static moveRightLeg(state: PlayerController['state'], ragdollBodies: Body[]) {
-    if (state[PlayerActions.activateRightFoot]) {
-      const rightLeg = ragdollBodies.find(isRightLeg)
-
-      if (rightLeg !== undefined) {
-        if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(rightLeg, rightLeg.position, PlayerControllerSystem.FORCE_LEFT)
-        }
-
-        if (state[PlayerActions.moveRight]) {
-          Body.applyForce(rightLeg, rightLeg.position, PlayerControllerSystem.FORCE_RIGHT)
-        }
-
-        if (state[PlayerActions.moveUp]) {
-          Body.applyForce(rightLeg, rightLeg.position, PlayerControllerSystem.FORCE_UP)
-        }
-
-        if (state[PlayerActions.moveDown]) {
-          Body.applyForce(rightLeg, rightLeg.position, PlayerControllerSystem.FORCE_DOWN)
-        }
-      }
-    }
-  }
-
-  private static moveRightArm(state: PlayerController['state'], ragdollBodies: Body[]) {
-    if (state[PlayerActions.activateRightHand]) {
-      const rightArm = ragdollBodies.find(isRightArm)
-
-      if (rightArm !== undefined) {
-        if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(rightArm, rightArm.position, PlayerControllerSystem.FORCE_LEFT)
-        }
-
-        if (state[PlayerActions.moveRight]) {
-          Body.applyForce(rightArm, rightArm.position, PlayerControllerSystem.FORCE_RIGHT)
-        }
-
-        if (state[PlayerActions.moveUp]) {
-          Body.applyForce(rightArm, rightArm.position, PlayerControllerSystem.FORCE_UP)
-        }
-
-        if (state[PlayerActions.moveDown]) {
-          Body.applyForce(rightArm, rightArm.position, PlayerControllerSystem.FORCE_DOWN)
-        }
-      }
-    }
-  }
-
-  private static moveLeftArm(state: PlayerController['state'], ragdollBodies: Body[]) {
-    if (state[PlayerActions.activateLeftHand]) {
-      const leftArm = ragdollBodies.find(isLeftArm)
-
-      if (leftArm !== undefined) {
-        if (state[PlayerActions.moveLeft]) {
-          Body.applyForce(leftArm, leftArm.position, PlayerControllerSystem.FORCE_LEFT)
-        }
-
-        if (state[PlayerActions.moveRight]) {
-          Body.applyForce(leftArm, leftArm.position, PlayerControllerSystem.FORCE_RIGHT)
-        }
-
-        if (state[PlayerActions.moveUp]) {
-          Body.applyForce(leftArm, leftArm.position, PlayerControllerSystem.FORCE_UP)
-        }
-
-        if (state[PlayerActions.moveDown]) {
-          Body.applyForce(leftArm, leftArm.position, PlayerControllerSystem.FORCE_DOWN)
-        }
-      }
+    if (body !== undefined) {
+      Body.applyForce(body, body.position, force)
     }
   }
 
@@ -161,10 +72,52 @@ export class PlayerControllerSystem extends BaseSystem {
 
     const ragdollBodies = composite.bodies
 
+    PlayerControllerSystem.tmpVector.x = 0
+    PlayerControllerSystem.tmpVector.y = 0
+
+    if (state[PlayerActions.moveLeft]) {
+      PlayerControllerSystem.tmpVector.x += PlayerControllerSystem.FORCE_LEFT.x
+      PlayerControllerSystem.tmpVector.y += PlayerControllerSystem.FORCE_LEFT.y
+    }
+    if (state[PlayerActions.moveRight]) {
+      PlayerControllerSystem.tmpVector.x += PlayerControllerSystem.FORCE_RIGHT.x
+      PlayerControllerSystem.tmpVector.y += PlayerControllerSystem.FORCE_RIGHT.y
+    }
+    if (state[PlayerActions.moveUp]) {
+      PlayerControllerSystem.tmpVector.x += PlayerControllerSystem.FORCE_UP.x
+      PlayerControllerSystem.tmpVector.y += PlayerControllerSystem.FORCE_UP.y
+    }
+    if (state[PlayerActions.moveDown]) {
+      PlayerControllerSystem.tmpVector.x += PlayerControllerSystem.FORCE_DOWN.x
+      PlayerControllerSystem.tmpVector.y += PlayerControllerSystem.FORCE_DOWN.y
+    }
+
     // Move limbs based on player actions
-    PlayerControllerSystem.moveLeftLeg(state, ragdollBodies)
-    PlayerControllerSystem.moveRightLeg(state, ragdollBodies)
-    PlayerControllerSystem.moveLeftArm(state, ragdollBodies)
-    PlayerControllerSystem.moveRightArm(state, ragdollBodies)
+    let bodyMultiplier = 4
+    if (state[PlayerActions.activateLeftFoot]) {
+      PlayerControllerSystem.moveBody(PlayerControllerSystem.tmpVector, ragdollBodies, isLeftLeg)
+      bodyMultiplier -= 1
+    }
+
+    if (state[PlayerActions.activateRightFoot]) {
+      PlayerControllerSystem.moveBody(PlayerControllerSystem.tmpVector, ragdollBodies, isRightLeg)
+      bodyMultiplier -= 1
+    }
+
+    if (state[PlayerActions.activateLeftHand]) {
+      PlayerControllerSystem.moveBody(PlayerControllerSystem.tmpVector, ragdollBodies, isLeftHand)
+      bodyMultiplier -= 1
+    }
+
+    if (state[PlayerActions.activateRightHand]) {
+      PlayerControllerSystem.moveBody(PlayerControllerSystem.tmpVector, ragdollBodies, isRightHand)
+      bodyMultiplier -= 1
+    }
+
+    if (bodyMultiplier !== 0) {
+      PlayerControllerSystem.tmpVector.x *= bodyMultiplier
+      PlayerControllerSystem.tmpVector.y *= bodyMultiplier
+      PlayerControllerSystem.moveBody(PlayerControllerSystem.tmpVector, ragdollBodies, isChest)
+    }
   }
 }

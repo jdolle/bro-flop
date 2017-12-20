@@ -54,8 +54,8 @@ export class PhysicsSystem extends BaseSystem {
     if (chest !== undefined) {
       const { gravity } = this.world
 
-      tempVector.x = gravity.x * gravity.scale * -1.5
-      tempVector.y = gravity.y * gravity.scale * -1.5
+      tempVector.x = gravity.x * gravity.scale * -1.3
+      tempVector.y = gravity.y * gravity.scale * -1.3
       Body.applyForce(
         chest,
         chest.position,
