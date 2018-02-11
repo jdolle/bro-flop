@@ -7,6 +7,7 @@ import { PositionComponent } from '../ces/Components/PositionComponent'
 import { PhysicsComponent } from '../ces/Components/PhysicsComponent'
 import { GrappleComponent } from '../ces/Components/GrappleComponent'
 import { SoundsComponent } from '../ces/Components/SoundsComponent'
+import { AIControllerComponent } from '../ces/Components/AIControllerComponent'
 import { CES } from '../ces'
 import { NativeAudio } from '../NativeAudio'
 
@@ -15,8 +16,8 @@ const addPositionComponent = (entitySystem: CES, entity: Entity) => {
   entitySystem.positions.add(entity, p)
 }
 
-const addPhysicsComponent = (entitySystem: CES, entity: Entity, world: World) => {
-  const playerRagdoll = createRagdoll(100, 200, 0.5, {
+const addPhysicsComponent = (entitySystem: CES, entity: Entity, world: World, x: number, y: number) => {
+  const playerRagdoll = createRagdoll(x, y, 0.5, {
     friction: 0.5,
     frictionAir: 0.02,
   })
@@ -36,6 +37,11 @@ const addPlayerControllerComponent = (entitySystem: CES, entity: Entity) => {
   entitySystem.playerController.add(entity, p)
 }
 
+const addAIControllerComponent = (entitySystem: CES, entity: Entity) => {
+  const c = AIControllerComponent.Create()
+  entitySystem.aiController.add(entity, c)
+}
+
 const addSoundsComponent = (entitySystem: CES, entity: Entity) => {
   NativeAudio().preloadSimple('grunt', 'res/audio/grunt-01.wav')
   NativeAudio().preloadSimple('pop', 'res/audio/bubble-pop-01.wav')
@@ -46,14 +52,18 @@ const addSoundsComponent = (entitySystem: CES, entity: Entity) => {
   entitySystem.sounds.add(entity, c)
 }
 
-export const createPlayer = (entitySystem: CES, world: World) => {
+export const createPlayer = (entitySystem: CES, world: World, x: number, y: number, ai: boolean = false) => {
   const entity = entitySystem.createEntity()
 
   addPositionComponent(entitySystem, entity)
-  addPhysicsComponent(entitySystem, entity, world)
+  addPhysicsComponent(entitySystem, entity, world, x, y)
   addPlayerControllerComponent(entitySystem, entity)
   addGrappleComponent(entitySystem, entity)
   addSoundsComponent(entitySystem, entity)
+
+  if (ai === true) {
+    addAIControllerComponent(entitySystem, entity)
+  }
 
   return entity
 }

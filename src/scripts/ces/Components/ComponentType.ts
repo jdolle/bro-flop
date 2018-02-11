@@ -9,4 +9,5 @@ export enum ComponentType {
   PLAYER_CONTROLLER = 1 << 2,
   GRAPPLE = 1 << 3,
   SOUNDS = 1 << 4,
+  AI_CONTROLLER = 1 << 5,
 }

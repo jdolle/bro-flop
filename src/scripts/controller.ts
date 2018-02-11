@@ -33,6 +33,7 @@ export class PlayerController {
       [PlayerActions.moveLeft]: false,
     }
     this.init = this.init.bind(this)
+    this.setState = this.setState.bind(this)
   }
 
   public init(): PlayerController {
@@ -70,6 +71,10 @@ export class PlayerController {
 
   public get state(): Readonly<ActionsState> {
     return this.actionsState
+  }
+
+  public setState(action: PlayerActions, state: boolean) {
+    this.actionsState[action] = state
   }
 
   public destroy() {

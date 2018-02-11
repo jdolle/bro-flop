@@ -10,6 +10,7 @@ import { PhysicsSystem } from './Systems/PhysicsSystem'
 import { PlayerControllerSystem } from './Systems/PlayerControllerSystem'
 import { GrappleSystem } from './Systems/GrappleSystem'
 import { SoundsSystem } from './Systems/SoundsSystem'
+import { AIControllerSystem } from './Systems/AIControllerSystem'
 import { createPlayer } from './Factories/PlayerFactory'
 import { createBoundaries } from './Factories/BoundariesFactory'
 import { drawWorld, initRenderer } from './physicsRenderer'
@@ -27,7 +28,11 @@ export class Game {
   private eventQueue: EventQueue
 
   constructor() {
-    this.renderer = PIXI.autoDetectRenderer(512, 512)
+    this.renderer = PIXI.autoDetectRenderer({
+      width: 512,
+      height: 512,
+      antialias: true,
+    })
     this.stage = new PIXI.Container()
     Matter.Plugin.register(MatterCollisionEvents)
     Matter.Plugin.use(Matter, 'matter-collision-events')
@@ -37,9 +42,10 @@ export class Game {
     this.entitySystem = new CES()
 
     // set up systems
-    this.entitySystem.addSystem(new PhysicsSystem(this.entitySystem, this.engine.world))
     this.entitySystem.addSystem(new PlayerControllerSystem(this.entitySystem))
+    this.entitySystem.addSystem(new AIControllerSystem(this.entitySystem))
     this.entitySystem.addSystem(new GrappleSystem(this.entitySystem, this.engine, this.eventQueue))
+    this.entitySystem.addSystem(new PhysicsSystem(this.entitySystem, this.engine.world))
     this.entitySystem.addSystem(new SoundsSystem(this.entitySystem, this.eventQueue))
 
     this.update = this.update.bind(this)
@@ -52,7 +58,8 @@ export class Game {
 
     initRenderer(this.stage)
 
-    createPlayer(this.entitySystem, this.engine.world)
+    createPlayer(this.entitySystem, this.engine.world, 100, 200)
+    createPlayer(this.entitySystem, this.engine.world, 300, 200, true)
     createBoundaries(this.entitySystem, this.engine.world, this.renderer.width, this.renderer.height)
 
     this.gameLoop()

@@ -20,7 +20,7 @@ import {
   isRightHand,
 } from '../bodyFilters'
 
-const MAX_GRAPPLE_DISTANCE = 3.5
+const MAX_GRAPPLE_DISTANCE = 3.3
 
 // pool of vectors for use in #update(). Not thread safe.
 const tmpUpdateVectors = [
@@ -138,9 +138,9 @@ export class GrappleSystem extends BaseSystem {
     composite.bodies.forEach((body) => {
       if (isLeftHand(body)) {
         body.onCollide((pair: IPair) => {
-          // if (GrappleSystem.collidesWithWall(pair)) {
-          //   return
-          // }
+          if (GrappleSystem.collidesWithWall(pair)) {
+            return
+          }
 
           if (GrappleSystem.collidesWithSelf(composite, pair)) {
             return
@@ -161,9 +161,9 @@ export class GrappleSystem extends BaseSystem {
         })
       } else if (isRightHand(body)) {
         body.onCollide((pair: IPair) => {
-          // if (GrappleSystem.collidesWithWall(pair)) {
-          //   return
-          // }
+          if (GrappleSystem.collidesWithWall(pair)) {
+            return
+          }
 
           if (GrappleSystem.collidesWithSelf(composite, pair)) {
             return
